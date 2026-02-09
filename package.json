@@ -1,0 +1,26 @@
+{
+  "name": "rs-cookie-scanner",
+  "version": "1.0.0",
+  "description": "Web Application for Cookie Scanning with Playwright",
+  "private": true,
+  "scripts": {
+    "server": "node server/src/index.js",
+    "client": "cd client && npx vite --host",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "cd client && npx vite build",
+    "start": "NODE_ENV=production node server/src/index.js",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --config jest.config.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "playwright": "^1.55.1",
+    "cors": "^2.8.5",
+    "helmet": "^8.0.0",
+    "express-rate-limit": "^7.5.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "jest": "^29.7.0",
+    "@jest/globals": "^29.7.0"
+  }
+}
