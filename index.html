@@ -575,9 +575,10 @@
 
                 // Type (First/Third party)
                 const typeCell = row.insertCell();
-                typeCell.innerHTML = `<span class="badge badge-${cookie.firstParty ? 'first' : 'third'}-party">
-                    ${cookie.firstParty ? 'Prima Parte' : 'Terza Parte'}
-                </span>`;
+                const typeSpan = document.createElement('span');
+                typeSpan.className = `badge badge-${cookie.firstParty ? 'first' : 'third'}-party`;
+                typeSpan.textContent = cookie.firstParty ? 'Prima Parte' : 'Terza Parte';
+                typeCell.appendChild(typeSpan);
 
                 // Category
                 const categoryCell = row.insertCell();
