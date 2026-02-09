@@ -19,6 +19,12 @@ const scanLimiter = rateLimit({
   message: { error: 'Too many scan requests, please try again later.' },
 });
 
+const generalLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 200,
+  message: 'Too many requests, please try again later.',
+});
+
 // In-memory scan results store
 const scanResults = new Map();
 
@@ -118,7 +124,7 @@ app.put('/api/scan/:id/cookie', (req, res) => {
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../../client/dist')));
-  app.get('*', (req, res) => {
+  app.get('*', generalLimiter, (req, res) => {
     res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
   });
 }
