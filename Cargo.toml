@@ -1,0 +1,15 @@
+[package]
+name = "rs-cookie-scanner"
+version = "0.1.0"
+edition = "2024"
+description = "A web cookie scanner that analyzes cookies set by websites"
+
+[dependencies]
+reqwest = { version = "0.12.12", features = ["cookies"] }
+tokio = { version = "1.43.0", features = ["full"] }
+clap = { version = "4.5.27", features = ["derive"] }
+serde = { version = "1.0.217", features = ["derive"] }
+serde_json = "1.0.138"
+cookie = "0.18.1"
+url = "2.5.4"
+thiserror = "2.0.11"

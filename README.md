@@ -153,3 +153,4 @@ Update cookie metadata (category, provider, description).
 | marketing | Used for advertising and tracking |
 | preferences | Store user preferences |
 | unknown | Not yet classified |
+
