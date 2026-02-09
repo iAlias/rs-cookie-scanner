@@ -511,7 +511,9 @@
             }
 
             const currentDomain = scanResult.domain;
-            const isFirstParty = domain === currentDomain || domain === `.${currentDomain}` || currentDomain.endsWith(domain.replace('.', ''));
+            const normalizedDomain = domain.startsWith('.') ? domain.slice(1) : domain;
+            const isFirstParty = domain === currentDomain || domain === `.${currentDomain}` || 
+                                 normalizedDomain === currentDomain || currentDomain.endsWith(normalizedDomain);
 
             scanResult.cookies.push({
                 name,
@@ -559,11 +561,17 @@
                 
                 // Name
                 const nameCell = row.insertCell();
-                nameCell.innerHTML = `<div class="cookie-name">${escapeHtml(cookie.name)}</div>`;
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'cookie-name';
+                nameDiv.textContent = cookie.name;
+                nameCell.appendChild(nameDiv);
 
                 // Domain
                 const domainCell = row.insertCell();
-                domainCell.innerHTML = `<div class="cookie-domain">${escapeHtml(cookie.domain)}</div>`;
+                const domainDiv = document.createElement('div');
+                domainDiv.className = 'cookie-domain';
+                domainDiv.textContent = cookie.domain;
+                domainCell.appendChild(domainDiv);
 
                 // Type (First/Third party)
                 const typeCell = row.insertCell();
@@ -573,27 +581,34 @@
 
                 // Category
                 const categoryCell = row.insertCell();
-                categoryCell.innerHTML = `
-                    <select onchange="updateCookie(${index}, 'category', this.value)">
-                        <option value="necessary" ${cookie.category === 'necessary' ? 'selected' : ''}>Necessari</option>
-                        <option value="analytics" ${cookie.category === 'analytics' ? 'selected' : ''}>Analitici</option>
-                        <option value="marketing" ${cookie.category === 'marketing' ? 'selected' : ''}>Marketing</option>
-                        <option value="preferences" ${cookie.category === 'preferences' ? 'selected' : ''}>Preferenze</option>
-                        <option value="unknown" ${cookie.category === 'unknown' ? 'selected' : ''}>Sconosciuti</option>
-                    </select>
+                const categorySelect = document.createElement('select');
+                categorySelect.innerHTML = `
+                    <option value="necessary" ${cookie.category === 'necessary' ? 'selected' : ''}>Necessari</option>
+                    <option value="analytics" ${cookie.category === 'analytics' ? 'selected' : ''}>Analitici</option>
+                    <option value="marketing" ${cookie.category === 'marketing' ? 'selected' : ''}>Marketing</option>
+                    <option value="preferences" ${cookie.category === 'preferences' ? 'selected' : ''}>Preferenze</option>
+                    <option value="unknown" ${cookie.category === 'unknown' ? 'selected' : ''}>Sconosciuti</option>
                 `;
+                categorySelect.addEventListener('change', () => updateCookie(index, 'category', categorySelect.value));
+                categoryCell.appendChild(categorySelect);
 
                 // Provider
                 const providerCell = row.insertCell();
-                providerCell.innerHTML = `<input type="text" value="${escapeHtml(cookie.provider)}" 
-                    onchange="updateCookie(${index}, 'provider', this.value)" 
-                    placeholder="Provider">`;
+                const providerInput = document.createElement('input');
+                providerInput.type = 'text';
+                providerInput.value = cookie.provider;
+                providerInput.placeholder = 'Provider';
+                providerInput.addEventListener('change', () => updateCookie(index, 'provider', providerInput.value));
+                providerCell.appendChild(providerInput);
 
                 // Description
                 const descCell = row.insertCell();
-                descCell.innerHTML = `<input type="text" value="${escapeHtml(cookie.description)}" 
-                    onchange="updateCookie(${index}, 'description', this.value)" 
-                    placeholder="Descrizione">`;
+                const descInput = document.createElement('input');
+                descInput.type = 'text';
+                descInput.value = cookie.description;
+                descInput.placeholder = 'Descrizione';
+                descInput.addEventListener('change', () => updateCookie(index, 'description', descInput.value));
+                descCell.appendChild(descInput);
 
                 // Security info
                 const securityCell = row.insertCell();

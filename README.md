@@ -20,12 +20,16 @@ Una semplice applicazione web per analizzare i cookie dei siti web e classificar
 Apri semplicemente il file `index.html` nel tuo browser:
 
 ```bash
-# Apri direttamente nel browser
+# Su macOS
 open index.html
-# oppure
-firefox index.html
-# oppure
-chrome index.html
+
+# Su Linux
+xdg-open index.html  # o firefox index.html
+
+# Su Windows
+start index.html  # o fai doppio clic sul file
+
+# Oppure trascina il file nella finestra del browser
 ```
 
 Oppure ospitalo su qualsiasi server web statico:
