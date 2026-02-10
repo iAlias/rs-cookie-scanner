@@ -4,24 +4,45 @@ const { chromium } = require('playwright');
  * Common selectors for cookie consent "accept" buttons across popular CMPs.
  */
 const CONSENT_SELECTORS = [
-  'button:has-text("Accetta")',
-  'button:has-text("Accept")',
-  'button:has-text("Accetto")',
-  'button:has-text("Accept all")',
+  // Specific CMP selectors (checked first for reliability)
+  '#onetrust-accept-btn-handler',
+  '#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll',
+  '#CybotCookiebotDialogBodyButtonAccept',
+  '.iubenda-cs-accept-btn',
+  '#iubenda-cs-banner .iubenda-cs-accept-btn',
+  '#accept-all-cookies',
+  '.cky-btn-accept',
+  '#hs-eu-confirmation-button',
+  '.cmplz-btn.cmplz-accept',
+  '#moove_gdpr_cookie_info_bar .moove-gdpr-infobar-allow-all',
+  '#gdpr-cookie-accept',
+  '#cookie_action_close_header',
+  '#qc-cmp2-ui button[mode="primary"]',
+  '.cc-accept',
+  '.cc-allow',
+  // Text-based selectors (multi-language)
   'button:has-text("Accetta tutti")',
   'button:has-text("Accetta tutto")',
+  'button:has-text("Accetta")',
+  'button:has-text("Accept all")',
+  'button:has-text("Accept All")',
+  'button:has-text("Accept")',
+  'button:has-text("Accetto")',
   'button:has-text("Consenti")',
-  'button:has-text("OK")',
   'button:has-text("Agree")',
+  'button:has-text("Allow all")',
+  'button:has-text("Allow All")',
+  'button:has-text("OK")',
+  'a:has-text("Accetta tutti")',
   'a:has-text("Accetta")',
+  'a:has-text("Accept all")',
   'a:has-text("Accept")',
+  // Generic attribute selectors (last resort)
   '[id*="accept" i]',
   '[class*="accept" i]',
   '[id*="consent" i][role="button"]',
-  '#onetrust-accept-btn-handler',
-  '#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll',
-  '.cc-accept',
-  '.cc-allow',
+  '[data-action="accept"]',
+  '[aria-label*="accept" i]',
 ];
 
 /**
@@ -29,13 +50,17 @@ const CONSENT_SELECTORS = [
  * @param {import('playwright').Page} page
  */
 async function tryAcceptConsent(page) {
+  // Give the CMP banner time to appear (some load asynchronously)
+  await page.waitForTimeout(2000);
+
   for (const selector of CONSENT_SELECTORS) {
     try {
       const el = page.locator(selector).first();
-      if (await el.isVisible({ timeout: 500 })) {
+      if (await el.isVisible({ timeout: 800 })) {
         console.log(`[SCANNER] Clicking consent button: ${selector}`);
         await el.click();
-        await page.waitForTimeout(1500);
+        // Wait for consent scripts to fire and set third-party cookies
+        await page.waitForTimeout(3000);
         return true;
       }
     } catch {
@@ -75,8 +100,16 @@ async function scanDomain(mainUrl, additionalUrls = [], waitTime = 3000) {
 
         // On the first page, try to accept cookie consent to unlock more cookies
         if (i === 0) {
-          await tryAcceptConsent(page);
-          await page.waitForTimeout(waitTime);
+          const accepted = await tryAcceptConsent(page);
+          if (accepted) {
+            // After consent, wait for third-party scripts to load and set cookies
+            try {
+              await page.waitForLoadState('networkidle', { timeout: 10000 });
+            } catch {
+              // Timeout is fine; some scripts keep streaming
+            }
+            await page.waitForTimeout(waitTime);
+          }
         }
       } catch (err) {
         console.warn(`[SCANNER] Warning navigating to ${url}: ${err.message}`);

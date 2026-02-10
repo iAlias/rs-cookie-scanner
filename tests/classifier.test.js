@@ -48,6 +48,62 @@ describe('classifyCookies', () => {
     expect(result[0].partyType).toBe('third');
   });
 
+  test('classifies Microsoft Clarity cookies', () => {
+    const rawCookies = [
+      { name: '_clck', domain: '.example.com', path: '/', httpOnly: false, secure: true },
+      { name: '_clsk', domain: '.example.com', path: '/', httpOnly: false, secure: true },
+      { name: 'CLID', domain: '.clarity.ms', path: '/', httpOnly: false, secure: true },
+      { name: 'ANONCHK', domain: '.c.clarity.ms', path: '/', httpOnly: false, secure: true },
+    ];
+
+    const result = classifyCookies(rawCookies, scannedUrl);
+    expect(result[0].category).toBe('analytics');
+    expect(result[0].provider).toBe('Microsoft');
+    expect(result[1].category).toBe('analytics');
+    expect(result[1].provider).toBe('Microsoft');
+    expect(result[2].category).toBe('analytics');
+    expect(result[2].provider).toBe('Microsoft');
+    expect(result[2].partyType).toBe('third');
+    expect(result[3].category).toBe('analytics');
+    expect(result[3].provider).toBe('Microsoft');
+  });
+
+  test('classifies Meta/Facebook cookies', () => {
+    const rawCookies = [
+      { name: '_fbq', domain: '.example.com', path: '/', httpOnly: false, secure: true },
+    ];
+
+    const result = classifyCookies(rawCookies, scannedUrl);
+    expect(result[0].category).toBe('marketing');
+    expect(result[0].provider).toBe('Facebook');
+  });
+
+  test('classifies TikTok cookies', () => {
+    const rawCookies = [
+      { name: '_tt_enable_cookie', domain: '.example.com', path: '/' },
+      { name: '_ttp', domain: '.example.com', path: '/' },
+    ];
+
+    const result = classifyCookies(rawCookies, scannedUrl);
+    expect(result[0].category).toBe('marketing');
+    expect(result[0].provider).toBe('TikTok');
+    expect(result[1].category).toBe('marketing');
+    expect(result[1].provider).toBe('TikTok');
+  });
+
+  test('classifies LinkedIn cookies', () => {
+    const rawCookies = [
+      { name: 'li_sugr', domain: '.linkedin.com', path: '/' },
+      { name: 'bcookie', domain: '.linkedin.com', path: '/' },
+    ];
+
+    const result = classifyCookies(rawCookies, scannedUrl);
+    expect(result[0].category).toBe('marketing');
+    expect(result[0].provider).toBe('LinkedIn');
+    expect(result[1].category).toBe('marketing');
+    expect(result[1].provider).toBe('LinkedIn');
+  });
+
   test('classifies unknown cookies with default values', () => {
     const rawCookies = [
       { name: 'custom_cookie', domain: '.example.com', path: '/', httpOnly: true, secure: false },
