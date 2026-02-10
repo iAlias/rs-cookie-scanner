@@ -1,4 +1,5 @@
-FROM mcr.microsoft.com/playwright:v1.40.0-jammy
+ARG PLAYWRIGHT_VERSION=1.58.2
+FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-jammy
 
 WORKDIR /app
 
