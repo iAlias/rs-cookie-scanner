@@ -1,6 +1,14 @@
 const { chromium } = require('playwright');
 
 /**
+ * Timing constants for CMP consent handling (in milliseconds).
+ */
+const CMP_BANNER_LOAD_DELAY = 2000;
+const SELECTOR_VISIBILITY_TIMEOUT = 800;
+const POST_CONSENT_SCRIPT_DELAY = 3000;
+const NETWORK_IDLE_TIMEOUT = 10000;
+
+/**
  * Common selectors for cookie consent "accept" buttons across popular CMPs.
  */
 const CONSENT_SELECTORS = [
@@ -51,16 +59,16 @@ const CONSENT_SELECTORS = [
  */
 async function tryAcceptConsent(page) {
   // Give the CMP banner time to appear (some load asynchronously)
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(CMP_BANNER_LOAD_DELAY);
 
   for (const selector of CONSENT_SELECTORS) {
     try {
       const el = page.locator(selector).first();
-      if (await el.isVisible({ timeout: 800 })) {
+      if (await el.isVisible({ timeout: SELECTOR_VISIBILITY_TIMEOUT })) {
         console.log(`[SCANNER] Clicking consent button: ${selector}`);
         await el.click();
         // Wait for consent scripts to fire and set third-party cookies
-        await page.waitForTimeout(3000);
+        await page.waitForTimeout(POST_CONSENT_SCRIPT_DELAY);
         return true;
       }
     } catch {
@@ -104,7 +112,7 @@ async function scanDomain(mainUrl, additionalUrls = [], waitTime = 3000) {
           if (accepted) {
             // After consent, wait for third-party scripts to load and set cookies
             try {
-              await page.waitForLoadState('networkidle', { timeout: 10000 });
+              await page.waitForLoadState('networkidle', { timeout: NETWORK_IDLE_TIMEOUT });
             } catch {
               // Timeout is fine; some scripts keep streaming
             }
