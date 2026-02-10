@@ -7,6 +7,7 @@ const { scanDomain } = require('./scanner');
 const { classifyCookies } = require('./classifier');
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3001;
 
 app.use(helmet());

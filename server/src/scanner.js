@@ -87,7 +87,15 @@ async function tryAcceptConsent(page) {
  * @returns {Promise<Array>} Array of raw cookie objects
  */
 async function scanDomain(mainUrl, additionalUrls = [], waitTime = 3000) {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+    ],
+  });
   const context = await browser.newContext({
     ignoreHTTPSErrors: true,
     userAgent:
