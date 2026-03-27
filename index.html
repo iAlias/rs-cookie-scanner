@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Scanner - Semplice</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍪</text></svg>" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .info-box strong {
+            color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .cookie-name {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .cookie-domain {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .badge-analytics {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .badge-marketing {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .badge-necessary {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .badge-preferences {
+            background: #fff3cd;
+            color: #664d03;
+        }
+
+        .badge-unknown {
+            background: #e2e3e5;
+            color: #41464b;
+        }
+
+        .badge-first-party {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .badge-third-party {
+            background: #fff3cd;
+            color: #664d03;
+        }
+
+        select {
+            padding: 6px 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .no-cookies {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 6px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .bookmarklet-box {
+            background: #e7f3ff;
+            border: 2px dashed #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .bookmarklet-link {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        .bookmarklet-link:hover {
+            background: #5568d3;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍪 Cookie Scanner</h1>
+            <p class="subtitle">Analisi semplice dei cookie senza backend</p>
+        </header>
+
+        <div class="card">
+            <h2 class="section-title">Come utilizzare</h2>
+            <div class="info-box">
+                <strong>Nota:</strong> Questa versione semplificata funziona completamente nel browser senza bisogno di un server backend. 
+                Può analizzare solo i cookie del dominio corrente o cookie inseriti manualmente.
+            </div>
+
+            <p style="margin-bottom: 15px;">Hai due opzioni:</p>
+            <ol style="margin-left: 20px; line-height: 1.8;">
+                <li><strong>Analizza questa pagina:</strong> Clicca "Scansiona Cookie Correnti" per vedere i cookie di questo dominio</li>
+                <li><strong>Usa su altri siti:</strong> Trascina il link bookmarklet nella barra dei preferiti e cliccalo su qualsiasi pagina web</li>
+            </ol>
+
+            <div class="bookmarklet-box">
+                <p><strong>📌 Bookmarklet - Trascina questo link nei preferiti:</strong></p>
+                <a href="javascript:(function(){const cookies=document.cookie.split(';').map(c=>c.trim()).filter(c=>c).map(c=>{const[name,value]=c.split('=');return{name,value:value||'',domain:window.location.hostname,path:'/',sameSite:'Lax',secure:window.location.protocol==='https:',httpOnly:false,category:'unknown',provider:'',description:'',expires:null};});const data={domain:window.location.hostname,scanDate:new Date().toISOString(),cookies};const w=window.open('','Cookie Scanner','width=1200,height=800');w.document.write('<!DOCTYPE html><html><head><title>Cookie Scanner Results</title></head><body><pre>'+JSON.stringify(data,null,2)+'</pre><br><button onclick=\"navigator.clipboard.writeText(document.querySelector(\'pre\').textContent).then(()=>alert(\'Copiato!\'))\">Copia JSON</button></body></html>');})();" class="bookmarklet-link">
+                    🔖 Cookie Scanner Bookmarklet
+                </a>
+                <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                    Trascina questo link nella barra dei preferiti, poi cliccalo su qualsiasi sito per analizzare i suoi cookie.
+                </p>
+            </div>
+
+            <div class="button-group">
+                <button id="scanBtn">🔍 Scansiona Cookie Correnti</button>
+                <button id="addManualBtn" class="btn-secondary">➕ Aggiungi Cookie Manuale</button>
+                <button id="clearBtn" class="btn-secondary">🗑️ Pulisci Risultati</button>
+                <button id="exportBtn" class="btn-success" disabled>💾 Esporta JSON</button>
+            </div>
+        </div>
+
+        <div class="card" id="statsCard" style="display: none;">
+            <h2 class="section-title">Statistiche</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalCookies">0</div>
+                    <div class="stat-label">Cookie Totali</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="firstParty">0</div>
+                    <div class="stat-label">Prima Parte</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="thirdParty">0</div>
+                    <div class="stat-label">Terze Parti</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="scanDate">-</div>
+                    <div class="stat-label">Data Scansione</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="resultsCard" style="display: none;">
+            <h2 class="section-title">Risultati Scansione</h2>
+            <div class="info-box">
+                <strong>Dominio:</strong> <span id="domainName">-</span>
+            </div>
+            <div class="table-container">
+                <table id="cookieTable">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Dominio</th>
+                            <th>Tipo</th>
+                            <th>Categoria</th>
+                            <th>Provider</th>
+                            <th>Descrizione</th>
+                            <th>Sicurezza</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cookieTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let scanResult = null;
+
+        // Known cookie classifier
+        const KNOWN_COOKIES = {
+            '_ga': { category: 'analytics', provider: 'Google Analytics', description: 'Used to distinguish users' },
+            '_gid': { category: 'analytics', provider: 'Google Analytics', description: 'Used to distinguish users' },
+            '_gat': { category: 'analytics', provider: 'Google Analytics', description: 'Used to throttle request rate' },
+            '_fbp': { category: 'marketing', provider: 'Facebook', description: 'Facebook Pixel tracking' },
+            '_gcl_au': { category: 'marketing', provider: 'Google AdSense', description: 'Google AdSense conversion tracking' },
+            '__utma': { category: 'analytics', provider: 'Google Analytics', description: 'Legacy GA tracking' },
+            '__utmb': { category: 'analytics', provider: 'Google Analytics', description: 'Legacy GA session tracking' },
+            '__utmc': { category: 'analytics', provider: 'Google Analytics', description: 'Legacy GA session tracking' },
+            '__utmz': { category: 'analytics', provider: 'Google Analytics', description: 'Legacy GA traffic source' },
+            'PHPSESSID': { category: 'necessary', provider: 'PHP', description: 'Session identifier' },
+            'JSESSIONID': { category: 'necessary', provider: 'Java', description: 'Session identifier' },
+            'ASP.NET_SessionId': { category: 'necessary', provider: 'ASP.NET', description: 'Session identifier' },
+        };
+
+        function classifyCookie(name) {
+            const upperName = name.toUpperCase();
+            
+            // Check known cookies
+            if (KNOWN_COOKIES[name]) {
+                return KNOWN_COOKIES[name];
+            }
+            
+            // Pattern matching
+            if (name.startsWith('_ga') || name.includes('analytics') || upperName.includes('UTM')) {
+                return { category: 'analytics', provider: 'Unknown', description: 'Analytics cookie' };
+            }
+            if (name.startsWith('_fb') || upperName.includes('FACEBOOK') || upperName.includes('FB')) {
+                return { category: 'marketing', provider: 'Facebook', description: 'Marketing cookie' };
+            }
+            if (upperName.includes('SESSION') || upperName.includes('SESS')) {
+                return { category: 'necessary', provider: 'Unknown', description: 'Session cookie' };
+            }
+            if (upperName.includes('PREF') || upperName.includes('LANG')) {
+                return { category: 'preferences', provider: 'Unknown', description: 'Preference cookie' };
+            }
+            
+            return { category: 'unknown', provider: 'Unknown', description: '' };
+        }
+
+        function parseCookies() {
+            const cookieString = document.cookie;
+            if (!cookieString) return [];
+
+            return cookieString.split(';').map(cookie => {
+                const [name, value] = cookie.trim().split('=');
+                if (!name) return null;
+
+                const classification = classifyCookie(name);
+                const currentDomain = window.location.hostname;
+
+                return {
+                    name: name,
+                    value: value || '',
+                    domain: currentDomain,
+                    path: '/',
+                    sameSite: 'Lax',
+                    secure: window.location.protocol === 'https:',
+                    httpOnly: false,
+                    category: classification.category,
+                    provider: classification.provider,
+                    description: classification.description,
+                    expires: null,
+                    firstParty: true
+                };
+            }).filter(c => c !== null);
+        }
+
+        function scanCurrentCookies() {
+            const cookies = parseCookies();
+            
+            if (cookies.length === 0) {
+                showToast('Nessun cookie trovato su questa pagina', 'info');
+                return;
+            }
+
+            scanResult = {
+                domain: window.location.hostname,
+                scanDate: new Date().toISOString(),
+                cookies: cookies
+            };
+
+            displayResults();
+            showToast(`Trovati ${cookies.length} cookie!`, 'success');
+        }
+
+        function addManualCookie() {
+            const name = prompt('Nome cookie:');
+            if (!name) return;
+
+            const domain = prompt('Dominio (es. .example.com):', window.location.hostname);
+            if (!domain) return;
+
+            const value = prompt('Valore (opzionale):', '');
+            const category = prompt('Categoria (necessary/analytics/marketing/preferences/unknown):', 'unknown');
+            const provider = prompt('Provider (opzionale):', '');
+            const description = prompt('Descrizione (opzionale):', '');
+
+            if (!scanResult) {
+                scanResult = {
+                    domain: window.location.hostname,
+                    scanDate: new Date().toISOString(),
+                    cookies: []
+                };
+            }
+
+            const currentDomain = scanResult.domain;
+            const normalizedDomain = domain.startsWith('.') ? domain.slice(1) : domain;
+            const isFirstParty = domain === currentDomain || domain === `.${currentDomain}` || 
+                                 normalizedDomain === currentDomain || currentDomain.endsWith(normalizedDomain);
+
+            scanResult.cookies.push({
+                name,
+                value,
+                domain,
+                path: '/',
+                sameSite: 'Lax',
+                secure: true,
+                httpOnly: false,
+                category: category || 'unknown',
+                provider: provider || 'Unknown',
+                description: description || '',
+                expires: null,
+                firstParty: isFirstParty
+            });
+
+            displayResults();
+            showToast('Cookie aggiunto!', 'success');
+        }
+
+        function displayResults() {
+            if (!scanResult) return;
+
+            document.getElementById('statsCard').style.display = 'block';
+            document.getElementById('resultsCard').style.display = 'block';
+            document.getElementById('exportBtn').disabled = false;
+
+            // Update stats
+            const cookies = scanResult.cookies;
+            const firstPartyCount = cookies.filter(c => c.firstParty).length;
+            const thirdPartyCount = cookies.length - firstPartyCount;
+
+            document.getElementById('totalCookies').textContent = cookies.length;
+            document.getElementById('firstParty').textContent = firstPartyCount;
+            document.getElementById('thirdParty').textContent = thirdPartyCount;
+            document.getElementById('domainName').textContent = scanResult.domain;
+            document.getElementById('scanDate').textContent = new Date(scanResult.scanDate).toLocaleDateString('it-IT');
+
+            // Update table
+            const tbody = document.getElementById('cookieTableBody');
+            tbody.replaceChildren();
+
+            cookies.forEach((cookie, index) => {
+                const row = tbody.insertRow();
+                
+                // Name
+                const nameCell = row.insertCell();
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'cookie-name';
+                nameDiv.textContent = cookie.name;
+                nameCell.appendChild(nameDiv);
+
+                // Domain
+                const domainCell = row.insertCell();
+                const domainDiv = document.createElement('div');
+                domainDiv.className = 'cookie-domain';
+                domainDiv.textContent = cookie.domain;
+                domainCell.appendChild(domainDiv);
+
+                // Type (First/Third party)
+                const typeCell = row.insertCell();
+                const typeSpan = document.createElement('span');
+                typeSpan.className = `badge badge-${cookie.firstParty ? 'first' : 'third'}-party`;
+                typeSpan.textContent = cookie.firstParty ? 'Prima Parte' : 'Terza Parte';
+                typeCell.appendChild(typeSpan);
+
+                // Category
+                const categoryCell = row.insertCell();
+                const categorySelect = document.createElement('select');
+                const categories = [
+                    { value: 'necessary', label: 'Necessari' },
+                    { value: 'analytics', label: 'Analitici' },
+                    { value: 'marketing', label: 'Marketing' },
+                    { value: 'preferences', label: 'Preferenze' },
+                    { value: 'unknown', label: 'Sconosciuti' }
+                ];
+                categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.value;
+                    option.textContent = cat.label;
+                    if (cookie.category === cat.value) {
+                        option.selected = true;
+                    }
+                    categorySelect.appendChild(option);
+                });
+                categorySelect.addEventListener('change', () => updateCookie(index, 'category', categorySelect.value));
+                categoryCell.appendChild(categorySelect);
+
+                // Provider
+                const providerCell = row.insertCell();
+                const providerInput = document.createElement('input');
+                providerInput.type = 'text';
+                providerInput.value = cookie.provider;
+                providerInput.placeholder = 'Provider';
+                providerInput.addEventListener('change', () => updateCookie(index, 'provider', providerInput.value));
+                providerCell.appendChild(providerInput);
+
+                // Description
+                const descCell = row.insertCell();
+                const descInput = document.createElement('input');
+                descInput.type = 'text';
+                descInput.value = cookie.description;
+                descInput.placeholder = 'Descrizione';
+                descInput.addEventListener('change', () => updateCookie(index, 'description', descInput.value));
+                descCell.appendChild(descInput);
+
+                // Security info
+                const securityCell = row.insertCell();
+                const securitySmall = document.createElement('small');
+                const securityBadges = [];
+                if (cookie.secure) securityBadges.push('🔒 Secure');
+                if (cookie.httpOnly) securityBadges.push('🚫 HttpOnly');
+                if (cookie.sameSite) securityBadges.push(`SameSite: ${cookie.sameSite}`);
+                securityBadges.forEach((badge, idx) => {
+                    if (idx > 0) securitySmall.appendChild(document.createElement('br'));
+                    securitySmall.appendChild(document.createTextNode(badge));
+                });
+                securityCell.appendChild(securitySmall);
+            });
+        }
+
+        function updateCookie(index, field, value) {
+            if (!scanResult) return;
+            scanResult.cookies[index][field] = value;
+            showToast('Cookie aggiornato', 'success');
+        }
+
+        function clearResults() {
+            if (scanResult && !confirm('Sei sicuro di voler cancellare i risultati?')) {
+                return;
+            }
+
+            scanResult = null;
+            document.getElementById('statsCard').style.display = 'none';
+            document.getElementById('resultsCard').style.display = 'none';
+            document.getElementById('exportBtn').disabled = true;
+            showToast('Risultati cancellati', 'info');
+        }
+
+        function exportJSON() {
+            if (!scanResult) return;
+
+            const dataStr = JSON.stringify(scanResult, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `cookie-scan-${scanResult.domain}-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            showToast('JSON esportato!', 'success');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            if (type === 'info') {
+                toast.style.background = '#0dcaf0';
+            }
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Auto-scan on load and attach event listeners
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('Cookie Scanner caricato - Versione semplificata senza backend');
+            
+            // Attach button event listeners
+            document.getElementById('scanBtn').addEventListener('click', scanCurrentCookies);
+            document.getElementById('addManualBtn').addEventListener('click', addManualCookie);
+            document.getElementById('clearBtn').addEventListener('click', clearResults);
+            document.getElementById('exportBtn').addEventListener('click', exportJSON);
+        });
+    </script>
+</body>
+</html>
